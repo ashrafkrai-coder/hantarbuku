@@ -350,13 +350,18 @@
     <!-- ═══ PAGE: REKOD ═══ -->
     <div class="page" id="page-rekod">
       <div class="section-head">
-        <div class="section-title">Rekod Penghantaran</div>
+        <div>
+          <div class="section-title">Rekod Penghantaran</div>
+          <div class="section-count" style="margin-top:4px">
+            <input type="date" id="rekod-date" onchange="renderRekod()" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:12px;font-weight:600;outline:none" />
+          </div>
+        </div>
         <div class="section-count" id="rekod-count">0 rekod</div>
       </div>
       <div id="rekod-list">
         <div class="empty">
           <div class="empty-icon">📬</div>
-          <div class="empty-text">Tiada penghantaran hari ini</div>
+          <div class="empty-text">Tiada penghantaran pada tarikh ini</div>
         </div>
       </div>
       <div class="pb-32"></div>
@@ -520,7 +525,14 @@ function switchTab(name) {
   document.getElementById('tab-'  + name).classList.add('active');
   document.getElementById('page-title').textContent = TAB_TITLES[name];
   document.getElementById('content-area').scrollTop = 0;
-  if (name === 'rekod')  renderRekod();
+  if (name === 'rekod') {
+    const d = document.getElementById('rekod-date');
+    if (!d.value) {
+      const dates = [...new Set(STATE.submissions.map(a => a.tarikh))].sort().reverse();
+      d.value = dates[0] || todayStr();
+    }
+    renderRekod();
+  }
   if (name === 'murid')  renderMurid();
   if (name === 'status') renderStatus(STATE.statusFilter);
 }
@@ -708,12 +720,13 @@ async function recordSubmission(student) {
 }
 
 function renderRekod() {
-  const today = STATE.submissions.filter(a => a.tarikh === todayStr());
+  const date = document.getElementById('rekod-date').value || todayStr();
+  const today = STATE.submissions.filter(a => a.tarikh === date);
   const list  = document.getElementById('rekod-list');
   document.getElementById('rekod-count').textContent = today.length + ' rekod';
 
   if (today.length === 0) {
-    list.innerHTML = '<div class="empty"><div class="empty-icon">📬</div><div class="empty-text">Tiada penghantaran hari ini</div></div>';
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📬</div><div class="empty-text">Tiada penghantaran pada tarikh ini</div></div>';
     return;
   }
 
