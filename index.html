@@ -290,7 +290,7 @@
       </div>
 
       <button class="btn-scan" id="btn-scan" onclick="startScan()">📡 Mula Mengimbas</button>
-
+      <button class="btn-save secondary" style="margin-bottom:16px" onclick="simulateScan()">🧪 Demo (Simulasi NFC)</button>
 
       <!-- Stats -->
       <div class="stats-row">
@@ -514,7 +514,15 @@ function stopScan() {
   document.getElementById('btn-scan').classList.remove('scanning');
 }
 
-
+function simulateScan() {
+  // Gunakan NFC ID sebenar dari data murid jika ada, atau ID rawak
+  const realUIDs = STATE.students.map(s => s.nfc_id).filter(Boolean);
+  const demoUIDs = ['04:AB:CD:EF','04:12:34:56','04:AA:BB:CC','04:FF:EE:DD'];
+  const pool = realUIDs.length > 0 ? realUIDs : demoUIDs;
+  const uid = pool[Math.floor(Math.random() * pool.length)];
+  showToast('🧪 Simulasi: ' + uid);
+  setTimeout(() => handleUID(uid), 400);
+}
 
 async function handleUID(nfc_id) {
   STATE.currentUID = nfc_id;
