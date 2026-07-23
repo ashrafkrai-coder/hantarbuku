@@ -59,8 +59,15 @@
   @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
 
   /* ── SCROLL ── */
-  .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+  .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; position: relative; }
   .content::-webkit-scrollbar { display: none; }
+  .pull-indicator {
+    position: absolute; top: -40px; left: 0; right: 0; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--text-2);
+    transition: transform .2s;
+  }
+  .pull-indicator.flip { transform: translateY(40px); }
 
   /* ── TAB BAR ── */
   .tab-bar {
@@ -289,9 +296,10 @@
     </div>
   </div>
 
-  <div class="content" id="content-area">
+   <div class="content" id="content-area">
+    <div class="pull-indicator" id="pull-indicator">🔄 Tarik ke bawah untuk muat semula</div>
 
-    <!-- ═══ PAGE: SCAN ═══ -->
+     <!-- ═══ PAGE: SCAN ═══ -->
     <div class="page active" id="page-scan">
 
       <div class="nfc-card">
@@ -501,6 +509,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadStudentsFromSupabase();
     await loadSubmissionsTodayFromSupabase();
   }
+  initPullToRefresh();
 });
 
 function updateDate() {
@@ -988,6 +997,61 @@ async function deleteSubmissionFromSupabase(nfc_id, tarikh, masa) {
       method: 'DELETE', headers: sbHeaders()
     });
   } catch {}
+}
+
+const PULL = {
+  startY: 0,
+  pulling: false,
+};
+
+function initPullToRefresh() {
+  const content = document.getElementById('content-area');
+  const indicator = document.getElementById('pull-indicator');
+
+  content.addEventListener('touchstart', (e) => {
+    if (content.scrollTop <= 0) {
+      PULL.startY = e.touches[0].clientY;
+      PULL.pulling = true;
+    }
+  }, { passive: true });
+
+  content.addEventListener('touchmove', (e) => {
+    if (!PULL.pulling) return;
+    const y = e.touches[0].clientY;
+    const diff = y - PULL.startY;
+    if (diff > 60 && content.scrollTop <= 0) {
+      indicator.classList.add('flip');
+      indicator.textContent = '🔄 Lepaskan untuk muat semula';
+    }
+  }, { passive: true });
+
+  content.addEventListener('touchend', () => {
+    if (!PULL.pulling) return;
+    PULL.pulling = false;
+    const indicator = document.getElementById('pull-indicator');
+    if (indicator.classList.contains('flip')) {
+      indicator.classList.remove('flip');
+      indicator.textContent = '🔄 Menyegar...';
+      syncData();
+    }
+  });
+}
+
+async function syncData() {
+  const indicator = document.getElementById('pull-indicator');
+  if (STATE.supabaseUrl && STATE.supabaseKey) {
+    await loadStudentsFromSupabase();
+    await loadSubmissionsTodayFromSupabase();
+  }
+  refreshStats();
+  renderRekod();
+  renderMurid();
+  renderStatus(STATE.statusFilter);
+  indicator.textContent = '✅ Dikemaskini';
+
+  setTimeout(() => {
+    indicator.textContent = '🔄 Tarik ke bawah untuk muat semula';
+  }, 2000);
 }
 
 // ══════════════════════════════════════════════
