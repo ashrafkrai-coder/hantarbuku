@@ -77,6 +77,20 @@
   .page { display: none; }
   .page.active { display: block; }
 
+  /* ── NFC SCAN CARD ── */
+  .nfc-card {
+    background: var(--surface); border: 1px solid var(--border);
+    backdrop-filter: var(--blur); border-radius: var(--radius);
+    padding: 32px 20px 28px; text-align: center; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .nfc-card::before {
+    content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
   .nfc-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
   .nfc-ring {
     position: absolute; inset: 0; border-radius: 50%;
@@ -99,19 +113,19 @@
   .nfc-icon-circle.success { background: linear-gradient(135deg, rgba(48,209,88,.2), rgba(48,209,88,.05)); border-color: rgba(48,209,88,.3); }
   .nfc-icon-circle.danger  { background: linear-gradient(135deg, rgba(255,69,58,.2), rgba(255,69,58,.05)); border-color: rgba(255,69,58,.3); }
 
-  .nfc-status { font-size: 20px; font-weight: 700; margin-bottom: 6px; text-align: center; }
-  .nfc-hint   { font-size: 13px; color: var(--text-2); line-height: 1.5; text-align: center; }
+  .nfc-status { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .nfc-hint   { font-size: 13px; color: var(--text-2); line-height: 1.5; }
 
   /* ── RESULT CARD ── */
   .result-card {
-    padding: 20px; margin-bottom: 20px; display: none;
-    animation: slide-up .35s cubic-bezier(.34,1.56,.64,1);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 20px; display: none;
+    animation: slide-up .35s cubic-bezier(.34,1.56,.64,1); border: 1px solid var(--border);
   }
   .result-card.show  { display: block; }
-  .result-card.green { background: linear-gradient(135deg, rgba(48,209,88,.15), rgba(48,209,88,.05)); }
-  .result-card.blue  { background: linear-gradient(135deg, rgba(0,122,255,.15), rgba(0,122,255,.05)); }
-  .result-card.red   { background: linear-gradient(135deg, rgba(255,69,58,.15), rgba(255,69,58,.05)); }
-  .result-card.orange{ background: linear-gradient(135deg, rgba(255,159,10,.15), rgba(255,159,10,.05)); }
+  .result-card.green { background: linear-gradient(135deg, rgba(48,209,88,.15), rgba(48,209,88,.05)); border-color: rgba(48,209,88,.3); }
+  .result-card.blue  { background: linear-gradient(135deg, rgba(0,122,255,.15), rgba(0,122,255,.05)); border-color: rgba(0,122,255,.3); }
+  .result-card.red   { background: linear-gradient(135deg, rgba(255,69,58,.15), rgba(255,69,58,.05)); border-color: rgba(255,69,58,.3); }
+  .result-card.orange{ background: linear-gradient(135deg, rgba(255,159,10,.15), rgba(255,159,10,.05)); border-color: rgba(255,159,10,.3); }
   @keyframes slide-up { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
 
   .result-row { display: flex; align-items: center; gap: 14px; }
@@ -150,13 +164,23 @@
   .btn-danger { background: rgba(255,69,58,.15); border: 1px solid rgba(255,69,58,.3); color: var(--danger); }
 
   /* ── STATS ── */
-  .stats-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    backdrop-filter: var(--blur); border-radius: var(--radius); padding: 18px 16px;
+  }
   .stat-num   { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
   .stat-label { font-size: 12px; color: var(--text-2); margin-top: 2px; }
   .stat-num.blue  { color: var(--accent); }
   .stat-num.green { color: var(--success); }
   .stat-num.orange{ color: var(--warning); }
 
+  /* ── PROGRESS BAR ── */
+  .progress-card {
+    background: var(--surface); border: 1px solid var(--border);
+    backdrop-filter: var(--blur); border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 20px;
+  }
   .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .progress-label { font-size: 13px; font-weight: 600; }
   .progress-pct   { font-size: 13px; font-weight: 700; color: var(--success); }
@@ -169,7 +193,10 @@
   .section-count { font-size: 12px; color: var(--text-2); background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 50px; }
 
   .list-item {
+    background: var(--surface); border: 1px solid var(--border);
+    backdrop-filter: var(--blur); border-radius: var(--radius-sm);
     padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+    animation: slide-up .3s ease;
   }
   .list-avatar {
     width: 42px; height: 42px; border-radius: 12px;
@@ -188,7 +215,7 @@
   .list-time { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
   /* ── SETUP CARD ── */
-  .setup-card { padding: 20px; margin-bottom: 16px; }
+  .setup-card { background: var(--surface); border: 1px solid var(--border); backdrop-filter: var(--blur); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
   .setup-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
   .setup-desc  { font-size: 12px; color: var(--text-2); margin-bottom: 16px; line-height: 1.5; }
   .field-group { margin-bottom: 14px; }
@@ -221,10 +248,10 @@
   .modal-sub   { font-size: 12px; color: var(--text-2); margin-bottom: 20px; font-family: 'SF Mono', monospace; }
 
   /* ── CONFIG STATUS ── */
-  .config-status { display: flex; align-items: center; gap: 8px; padding: 8px 0; margin-bottom: 16px; font-size: 13px; }
-  .config-ok   { color: var(--success); }
-  .config-err  { color: var(--danger); }
-  .config-warn { color: var(--warning); }
+  .config-status { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 13px; }
+  .config-ok   { background: rgba(48,209,88,.1);  border: 1px solid rgba(48,209,88,.2);  color: var(--success); }
+  .config-err  { background: rgba(255,69,58,.1);  border: 1px solid rgba(255,69,58,.2);  color: var(--danger); }
+  .config-warn { background: rgba(255,159,10,.1); border: 1px solid rgba(255,159,10,.2); color: var(--warning); }
 
   /* ── TOAST ── */
   .toast {
@@ -267,14 +294,16 @@
     <!-- ═══ PAGE: SCAN ═══ -->
     <div class="page active" id="page-scan">
 
-       <div class="nfc-ring-wrap">
-         <div class="nfc-ring" id="r1"></div>
-         <div class="nfc-ring" id="r2"></div>
-         <div class="nfc-ring" id="r3"></div>
-         <div class="nfc-icon-circle" id="nfc-icon">📚</div>
-       </div>
-       <div class="nfc-status" id="nfc-status">Sedia Mengimbas</div>
-       <div class="nfc-hint"   id="nfc-hint">Dekatkan kad nama murid untuk rekod penghantaran</div>
+      <div class="nfc-card">
+        <div class="nfc-ring-wrap">
+          <div class="nfc-ring" id="r1"></div>
+          <div class="nfc-ring" id="r2"></div>
+          <div class="nfc-ring" id="r3"></div>
+          <div class="nfc-icon-circle" id="nfc-icon">📚</div>
+        </div>
+        <div class="nfc-status" id="nfc-status">Sedia Mengimbas</div>
+        <div class="nfc-hint"   id="nfc-hint">Dekatkan kad nama murid untuk rekod penghantaran</div>
+      </div>
 
       <!-- Result -->
       <div class="result-card" id="result-card">
@@ -289,23 +318,23 @@
         </div>
       </div>
 
-
       <button class="btn-scan" id="btn-scan" onclick="startScan()">📡 Mula Mengimbas</button>
+
 
       <!-- Stats -->
       <div class="stats-row">
-        <div>
+        <div class="stat-card">
           <div class="stat-num blue" id="stat-total">0</div>
           <div class="stat-label">Murid Berdaftar</div>
         </div>
-        <div>
+        <div class="stat-card">
           <div class="stat-num green" id="stat-today">0</div>
           <div class="stat-label">Hantar Hari Ini</div>
         </div>
       </div>
 
       <!-- Progress -->
-      <div style="margin-bottom:20px">
+      <div class="progress-card">
         <div class="progress-row">
           <div class="progress-label">📊 Kemajuan Penghantaran Hari Ini</div>
           <div class="progress-pct" id="prog-pct">0%</div>
@@ -365,7 +394,7 @@
 
     <!-- ═══ PAGE: TETAPAN ═══ -->
     <div class="page" id="page-tetapan">
-      <div style="padding:20px;margin-bottom:16px">
+      <div class="setup-card">
         <div class="setup-title">⚙️ Konfigurasi Supabase</div>
         <div class="setup-desc">Masukkan butiran projek Supabase anda untuk menyimpan data penghantaran secara dalam talian.</div>
         <div id="config-status-bar" class="config-status config-warn">⚠️ Supabase belum dikonfigurasi</div>
@@ -380,7 +409,17 @@
         <button class="btn-save" onclick="saveSupabase()">💾 Simpan & Uji Sambungan</button>
       </div>
 
-      <div style="padding:20px;margin-bottom:16px">
+      <div class="setup-card">
+        <div class="setup-title">🗄️ Struktur Jadual Supabase</div>
+        <div class="setup-desc">Jadual yang digunakan oleh sistem ini:</div>
+        <div style="background:rgba(0,0,0,.4);border-radius:10px;padding:14px;font-family:'SF Mono',monospace;font-size:11px;color:#a8ff78;line-height:1.8;border:1px solid var(--border)">
+          <b style="color:#fff">murid</b> → id, nfc_id, nama, kelas<br>
+          <b style="color:#fff">kehadiran</b> → id, nfc_id, nama, kelas, tarikh, masa<br><br>
+          <span style="color:var(--text-2)">* Jadual "kehadiran" digunakan semula untuk rekod penghantaran buku/tugasan</span>
+        </div>
+      </div>
+
+      <div class="setup-card">
         <div class="setup-title">ℹ️ Tentang Aplikasi</div>
         <div class="setup-desc">Sistem Rekod Penghantaran Buku / Tugasan<br>Versi 2.0 • Kelas 1 al-Farabi 🇲🇾</div>
         <button class="btn-save danger btn-danger gap-10" onclick="clearAll()">🗑️ Padam Semua Data Tempatan</button>
@@ -489,6 +528,13 @@ function switchTab(name) {
 // ══════════════════════════════════════════════
 //  NFC
 // ══════════════════════════════════════════════
+// Normalize NFC ID: "046B8AFC9F6180" → "04:6b:8a:fc:9f:61:80"
+function normalizeNfcId(raw) {
+  const clean = raw.replace(/[^a-fA-F0-9]/g, "").toLowerCase();
+  if (clean.length >= 4) return clean.match(/.{1,2}/g).join(":");
+  return raw.toLowerCase();
+}
+
 async function startScan() {
   if (!('NDEFReader' in window)) { showToast('❌ NFC tidak disokong pada peranti ini'); return; }
   if (STATE.scanning) { stopScan(); return; }
@@ -497,7 +543,7 @@ async function startScan() {
     await STATE.nfcReader.scan();
     STATE.scanning = true;
     setNFCState('scanning');
-    STATE.nfcReader.onreading = (e) => handleUID(normalizeUID(e.serialNumber));
+    STATE.nfcReader.onreading = (e) => { const normalized = normalizeNfcId(e.serialNumber || ""); handleUID(normalized); };
     STATE.nfcReader.onreadingerror = () => showToast('⚠️ Gagal membaca kad NFC');
     document.getElementById('btn-scan').textContent = '⏹ Henti Mengimbas';
     document.getElementById('btn-scan').classList.add('scanning');
@@ -516,11 +562,20 @@ function stopScan() {
 
 
 async function handleUID(nfc_id) {
-  STATE.currentUID = nfc_id = normalizeUID(nfc_id);
+  // Normalize format: pastikan guna format "xx:xx:xx" (lowercase)
+  nfc_id = normalizeNfcId(nfc_id);
+  STATE.currentUID = nfc_id;
   setNFCState('reading');
 
-  // Cari dalam cache tempatan
-  let student = STATE.students.find(s => normalizeUID(s.nfc_id) === nfc_id);
+  // Cari dalam cache tempatan — cuba kedua-dua format
+  const altId = nfc_id.includes(':')
+    ? nfc_id.replace(/:/g, '')
+    : nfc_id.match(/.{1,2}/g).join(':');
+  let student = STATE.students.find(s =>
+    s.nfc_id === nfc_id || s.nfc_id === altId ||
+    s.nfc_id?.toLowerCase() === nfc_id ||
+    s.nfc_id?.toLowerCase() === altId
+  );
 
   // Cuba Supabase jika tak jumpa
   if (!student && STATE.supabaseUrl && STATE.supabaseKey) {
@@ -533,7 +588,7 @@ async function handleUID(nfc_id) {
   }
 
   if (student) {
-    const alreadyToday = STATE.submissions.some(a => normalizeUID(a.nfc_id) === nfc_id && a.tarikh === todayStr());
+    const alreadyToday = STATE.submissions.some(a => a.nfc_id === nfc_id && a.tarikh === todayStr());
     if (alreadyToday) {
       setNFCState('success');
       showResult('orange', student, '⚠️ Dah\nHantar');
@@ -618,7 +673,7 @@ async function registerStudent() {
   const kelas = document.getElementById('reg-kelas').value.trim();
   if (!nama) { showToast('⚠️ Sila masukkan nama murid'); return; }
 
-  const student = { nfc_id: normalizeUID(STATE.currentUID), nama, kelas, created_at: new Date().toISOString() };
+  const student = { nfc_id: STATE.currentUID, nama, kelas, created_at: new Date().toISOString() };
 
   if (STATE.supabaseUrl && STATE.supabaseKey) {
     const ok = await saveStudentToSupabase(student);
@@ -642,7 +697,7 @@ async function registerStudent() {
 // ══════════════════════════════════════════════
 async function recordSubmission(student) {
   const rec = {
-    nfc_id: normalizeUID(student.nfc_id), nama: student.nama, kelas: student.kelas,
+    nfc_id: student.nfc_id, nama: student.nama, kelas: student.kelas,
     tarikh: todayStr(), masa: new Date().toISOString(),
   };
   if (STATE.supabaseUrl && STATE.supabaseKey) await saveSubmissionToSupabase(rec);
@@ -694,11 +749,11 @@ function filterStatus(filter) {
 }
 
 function renderStatus(filter) {
-  const submitted = new Set(STATE.submissions.filter(a => a.tarikh === todayStr()).map(a => normalizeUID(a.nfc_id)));
+  const submitted = new Set(STATE.submissions.filter(a => a.tarikh === todayStr()).map(a => a.nfc_id));
   let list = STATE.students;
 
-  if (filter === 'hantar') list = list.filter(s => submitted.has(normalizeUID(s.nfc_id)));
-  if (filter === 'belum')  list = list.filter(s => !submitted.has(normalizeUID(s.nfc_id)));
+  if (filter === 'hantar') list = list.filter(s => submitted.has(s.nfc_id));
+  if (filter === 'belum')  list = list.filter(s => !submitted.has(s.nfc_id));
 
   document.getElementById('status-count').textContent = list.length + ' murid';
 
@@ -710,14 +765,14 @@ function renderStatus(filter) {
 
   // Sort: dah hantar dulu
   list = [...list].sort((a, b) => {
-    const aS = submitted.has(normalizeUID(a.nfc_id)) ? 0 : 1;
-    const bS = submitted.has(normalizeUID(b.nfc_id)) ? 0 : 1;
+    const aS = submitted.has(a.nfc_id) ? 0 : 1;
+    const bS = submitted.has(b.nfc_id) ? 0 : 1;
     return aS - bS || a.nama.localeCompare(b.nama);
   });
 
   el.innerHTML = list.map(s => {
-    const done = submitted.has(normalizeUID(s.nfc_id));
-    const rec  = STATE.submissions.find(a => normalizeUID(a.nfc_id) === normalizeUID(s.nfc_id) && a.tarikh === todayStr());
+    const done = submitted.has(s.nfc_id);
+    const rec  = STATE.submissions.find(a => a.nfc_id === s.nfc_id && a.tarikh === todayStr());
     return `
     <div class="list-item">
       <div class="list-avatar ${done ? 'submitted' : 'pending'}">${done ? '✓' : s.nama.charAt(0).toUpperCase()}</div>
@@ -782,10 +837,20 @@ function sbHeaders() {
 
 async function fetchStudentFromSupabase(nfc_id) {
   try {
+    // Cuba format asal dulu
     const r = await fetch(`${STATE.supabaseUrl}/rest/v1/murid?nfc_id=eq.${encodeURIComponent(nfc_id)}&limit=1`, { headers: sbHeaders() });
     if (!r.ok) return null;
     const data = await r.json();
-    return data[0] || null;
+    if (data[0]) return data[0];
+
+    // Cuba format alternatif (dengan/tanpa ":")
+    const alt = nfc_id.includes(':')
+      ? nfc_id.replace(/:/g, '').toLowerCase()      // buang ":"
+      : nfc_id.match(/.{1,2}/g).join(':').toLowerCase(); // tambah ":"
+    const r2 = await fetch(`${STATE.supabaseUrl}/rest/v1/murid?nfc_id=eq.${encodeURIComponent(alt)}&limit=1`, { headers: sbHeaders() });
+    if (!r2.ok) return null;
+    const data2 = await r2.json();
+    return data2[0] || null;
   } catch { return null; }
 }
 
@@ -921,7 +986,6 @@ function showToast(msg) {
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit' }); }
 function formatDate(iso) { return new Date(iso).toLocaleDateString('ms-MY', { day:'numeric', month:'short', year:'numeric' }); }
-function normalizeUID(uid) { return String(uid).replace(/[^A-Fa-f0-9]/g, '').toUpperCase(); }
 
 function saveLocal() {
   localStorage.setItem('students',    JSON.stringify(STATE.students));
