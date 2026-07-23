@@ -728,6 +728,7 @@ function renderRekod() {
       <div class="list-right">
         <div class="list-status status-hantar">✓ Dihantar</div>
         <div class="list-time">${formatTime(a.masa)}</div>
+        <button class="btn-save secondary" style="padding:8px 10px;margin-top:6px;font-size:11px;width:auto;display:inline-flex" onclick="deleteRecord('${a.nfc_id}','${a.tarikh}','${a.masa}')">🗑 Padam</button>
       </div>
     </div>`).join('');
 }
@@ -954,6 +955,26 @@ function clearAll() {
   localStorage.removeItem('students'); localStorage.removeItem('submissions');
   refreshStats(); renderRekod(); renderMurid(); renderStatus('semua');
   showToast('🗑️ Data tempatan dipadam');
+}
+
+async function deleteRecord(nfc_id, tarikh, masa) {
+  if (!confirm('Padam rekod penghantaran ini?')) return;
+  nfc_id = normalizeUID(nfc_id);
+  STATE.submissions = STATE.submissions.filter(r => !(normalizeUID(r.nfc_id) === nfc_id && r.tarikh === tarikh && r.masa === masa));
+  saveLocal();
+  if (STATE.supabaseUrl && STATE.supabaseKey) {
+    await deleteSubmissionFromSupabase(nfc_id, tarikh, masa);
+  }
+  refreshStats(); renderRekod(); renderStatus(STATE.statusFilter);
+  showToast('🗑️ Rekod dipadam');
+}
+
+async function deleteSubmissionFromSupabase(nfc_id, tarikh, masa) {
+  try {
+    const r = await fetch(`${STATE.supabaseUrl}/rest/v1/kehadiran?nfc_id=eq.${encodeURIComponent(nfc_id)}&tarikh=eq.${encodeURIComponent(tarikh)}&masa=eq.${encodeURIComponent(masa)}`, {
+      method: 'DELETE', headers: sbHeaders()
+    });
+  } catch {}
 }
 
 // ══════════════════════════════════════════════
