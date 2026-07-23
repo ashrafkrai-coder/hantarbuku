@@ -1,4 +1,4 @@
-const CACHE = 'nfc-hadir-v2';
+const CACHE = 'nfc-hadir-v3';
 const ASSETS = [
   './',
   './index.html',

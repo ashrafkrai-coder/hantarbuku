@@ -497,7 +497,7 @@ async function startScan() {
     await STATE.nfcReader.scan();
     STATE.scanning = true;
     setNFCState('scanning');
-    STATE.nfcReader.onreading = (e) => handleUID(e.serialNumber.toUpperCase());
+    STATE.nfcReader.onreading = (e) => handleUID(normalizeUID(e.serialNumber));
     STATE.nfcReader.onreadingerror = () => showToast('⚠️ Gagal membaca kad NFC');
     document.getElementById('btn-scan').textContent = '⏹ Henti Mengimbas';
     document.getElementById('btn-scan').classList.add('scanning');
@@ -514,22 +514,13 @@ function stopScan() {
   document.getElementById('btn-scan').classList.remove('scanning');
 }
 
-function simulateScan() {
-  // Gunakan NFC ID sebenar dari data murid jika ada, atau ID rawak
-  const realUIDs = STATE.students.map(s => s.nfc_id).filter(Boolean);
-  const demoUIDs = ['04:AB:CD:EF','04:12:34:56','04:AA:BB:CC','04:FF:EE:DD'];
-  const pool = realUIDs.length > 0 ? realUIDs : demoUIDs;
-  const uid = pool[Math.floor(Math.random() * pool.length)];
-  showToast('🧪 Simulasi: ' + uid);
-  setTimeout(() => handleUID(uid), 400);
-}
 
 async function handleUID(nfc_id) {
-  STATE.currentUID = nfc_id;
+  STATE.currentUID = nfc_id = normalizeUID(nfc_id);
   setNFCState('reading');
 
   // Cari dalam cache tempatan
-  let student = STATE.students.find(s => s.nfc_id === nfc_id);
+  let student = STATE.students.find(s => normalizeUID(s.nfc_id) === nfc_id);
 
   // Cuba Supabase jika tak jumpa
   if (!student && STATE.supabaseUrl && STATE.supabaseKey) {
@@ -542,7 +533,7 @@ async function handleUID(nfc_id) {
   }
 
   if (student) {
-    const alreadyToday = STATE.submissions.some(a => a.nfc_id === nfc_id && a.tarikh === todayStr());
+    const alreadyToday = STATE.submissions.some(a => normalizeUID(a.nfc_id) === nfc_id && a.tarikh === todayStr());
     if (alreadyToday) {
       setNFCState('success');
       showResult('orange', student, '⚠️ Dah\nHantar');
@@ -627,7 +618,7 @@ async function registerStudent() {
   const kelas = document.getElementById('reg-kelas').value.trim();
   if (!nama) { showToast('⚠️ Sila masukkan nama murid'); return; }
 
-  const student = { nfc_id: STATE.currentUID, nama, kelas, created_at: new Date().toISOString() };
+  const student = { nfc_id: normalizeUID(STATE.currentUID), nama, kelas, created_at: new Date().toISOString() };
 
   if (STATE.supabaseUrl && STATE.supabaseKey) {
     const ok = await saveStudentToSupabase(student);
@@ -651,7 +642,7 @@ async function registerStudent() {
 // ══════════════════════════════════════════════
 async function recordSubmission(student) {
   const rec = {
-    nfc_id: student.nfc_id, nama: student.nama, kelas: student.kelas,
+    nfc_id: normalizeUID(student.nfc_id), nama: student.nama, kelas: student.kelas,
     tarikh: todayStr(), masa: new Date().toISOString(),
   };
   if (STATE.supabaseUrl && STATE.supabaseKey) await saveSubmissionToSupabase(rec);
@@ -703,11 +694,11 @@ function filterStatus(filter) {
 }
 
 function renderStatus(filter) {
-  const submitted = new Set(STATE.submissions.filter(a => a.tarikh === todayStr()).map(a => a.nfc_id));
+  const submitted = new Set(STATE.submissions.filter(a => a.tarikh === todayStr()).map(a => normalizeUID(a.nfc_id)));
   let list = STATE.students;
 
-  if (filter === 'hantar') list = list.filter(s => submitted.has(s.nfc_id));
-  if (filter === 'belum')  list = list.filter(s => !submitted.has(s.nfc_id));
+  if (filter === 'hantar') list = list.filter(s => submitted.has(normalizeUID(s.nfc_id)));
+  if (filter === 'belum')  list = list.filter(s => !submitted.has(normalizeUID(s.nfc_id)));
 
   document.getElementById('status-count').textContent = list.length + ' murid';
 
@@ -719,14 +710,14 @@ function renderStatus(filter) {
 
   // Sort: dah hantar dulu
   list = [...list].sort((a, b) => {
-    const aS = submitted.has(a.nfc_id) ? 0 : 1;
-    const bS = submitted.has(b.nfc_id) ? 0 : 1;
+    const aS = submitted.has(normalizeUID(a.nfc_id)) ? 0 : 1;
+    const bS = submitted.has(normalizeUID(b.nfc_id)) ? 0 : 1;
     return aS - bS || a.nama.localeCompare(b.nama);
   });
 
   el.innerHTML = list.map(s => {
-    const done = submitted.has(s.nfc_id);
-    const rec  = STATE.submissions.find(a => a.nfc_id === s.nfc_id && a.tarikh === todayStr());
+    const done = submitted.has(normalizeUID(s.nfc_id));
+    const rec  = STATE.submissions.find(a => normalizeUID(a.nfc_id) === normalizeUID(s.nfc_id) && a.tarikh === todayStr());
     return `
     <div class="list-item">
       <div class="list-avatar ${done ? 'submitted' : 'pending'}">${done ? '✓' : s.nama.charAt(0).toUpperCase()}</div>
@@ -930,6 +921,7 @@ function showToast(msg) {
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('ms-MY', { hour:'2-digit', minute:'2-digit' }); }
 function formatDate(iso) { return new Date(iso).toLocaleDateString('ms-MY', { day:'numeric', month:'short', year:'numeric' }); }
+function normalizeUID(uid) { return String(uid).replace(/[^A-Fa-f0-9]/g, '').toUpperCase(); }
 
 function saveLocal() {
   localStorage.setItem('students',    JSON.stringify(STATE.students));
